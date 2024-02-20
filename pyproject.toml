@@ -1,0 +1,21 @@
+[tool.poetry]
+name = "bib"
+version = "0.1.0"
+description = ""
+authors = ["Lucas França <lucas.queiroz@ig.ufpa.br>"]
+
+[tool.poetry.dependencies]
+python = "^3.10"
+typer = {extras = ["all"], version = "^0.9.0"}
+sqlalchemy = "^2.0.27"
+psycopg2 = "^2.9.9"
+
+[tool.poetry.scripts]
+bib = "bib.main:app"
+
+[tool.poetry.group.dev.dependencies]
+pylint = "^3.0.3"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
