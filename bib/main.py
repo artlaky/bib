@@ -160,6 +160,51 @@ def read_book(title: str):
     print(f'book { title } is now Readed')
 
 
+# atualiza o nome e o author de um livro na biblioteca pelo seu id.
+@app.command(name='up', help='Update informations of a book in your library')
+def update_title(bid: str, 
+                 title: str = tp.Option(default='', help='update the book title'), 
+                 author: str = tp.Option(default='', help='update the books author')):
+    '''
+        Update informations of a book in your library
+    '''
+
+    conn = cone()
+    cur = conn.cursor()
+
+    # update de  title 
+    if title and author:
+        cur.execute(
+            '''
+                UPDATE books SET title=%s, author=%s WHERE id=%s
+            ''', (title, author, bid)
+        )
+        print(f'Books title updated for { title }')
+        print(f'Books autor updated for { author }')
+
+    elif title:
+        cur.execute(
+            '''
+                UPDATE books SET title=%s WHERE id=%s
+            ''', (title, bid)
+        )
+        
+        print(f'Books title updated for { title }')
+    elif author:
+        cur.execute(
+            '''
+                UPDATE books SET author=%s WHERE id=%s
+            ''', (author, bid)
+        )
+        
+        print(f'Books autor updated for { author }')
+
+    
+    
+    conn.commit()
+    conn.close()
+    cur.close()
+
 # inicilizando banco de dados e o aplicativo cli.
 if __name__ == "__main__":
     initialize_database()
