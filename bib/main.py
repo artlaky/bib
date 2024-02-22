@@ -244,7 +244,7 @@ def search_book(
             list_books()
 
     # busca por author
-    if author:
+    elif author:
         cur.execute(
             f'''
                 SELECT * FROM books WHERE LOWER(author)='{author.lower()}'
