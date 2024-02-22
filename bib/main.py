@@ -4,7 +4,7 @@ from uuid import uuid1
 
 # TODO:  estruturação de código
 
-# conexão com o banco de dados
+# inicia a  conexão com o banco de dados
 def cone():
     '''
         Start the conection with postgress database
@@ -163,8 +163,8 @@ def read_book(title: str):
 # atualiza o nome e o author de um livro na biblioteca pelo seu id.
 @app.command(name='up', help='Update informations of a book in your library')
 def update_title(bid: str, 
-                 title: str = tp.Option(default='', help='update the book title'), 
-                 author: str = tp.Option(default='', help='update the books author')):
+                 title: str = tp.Option('', '--title', '-t', help='update the book title'), 
+                 author: str = tp.Option('', '--auhtor', '-a', help='up   date the books author')):
     '''
         Update informations of a book in your library
     '''
@@ -202,10 +202,80 @@ def update_title(bid: str,
     
     
     conn.commit()
-    conn.close()
     cur.close()
+    conn.close()
+    
+
+@app.command(name='sr', help='search a book in your library by his title or author.')
+def search_book(
+    title: str = tp.Option('', '--title', '-t', help='Search book from his title'),
+    author: str  = tp.Option('', '--author', '-a', help='search all books of a author')
+):
+    conn = cone()
+    cur = conn.cursor()
+
+    # busca por titulo
+    if title:
+        cur.execute(
+            f'''
+                SELECT * FROM books WHERE LOWER(title)='{title.lower()}'
+            '''
+        )
+
+        response = cur.fetchall()
+        if response:
+            print('=-=-=-=-=- BOOKS =-=-=-=-=-')
+            print('=-=-=-=-=-=-=-=-=-=-=-=-=-=')
+            for book in response:
+                bok_id, title, author, status = book
+                if status is False:
+                    read_or_not = 'not read'
+                else:
+                    read_or_not = 'read'
+                print(f'Id: { bok_id }')
+                print(f'Title: { title }')
+                print(f'Author: { author }')
+                print(f'READ? { read_or_not }')
+                print('--------------------------')
+        else:            
+            print('Book not founded in you library. Check if the title is correct')
+            print('Or try add command for add this book in your library')
+
+            list_books()
+
+    # busca por author
+    if author:
+        cur.execute(
+            f'''
+                SELECT * FROM books WHERE LOWER(author)='{author.lower()}'
+            ''', (author)
+        )
+
+        response = cur.fetchall()
+        if response:
+            print('=-=-=-=-=- BOOKS =-=-=-=-=-')
+            print('=-=-=-=-=-=-=-=-=-=-=-=-=-=')
+            for book in response:
+                bok_id, title, author, status = book
+                if status is False:
+                    read_or_not = 'not read'
+                else:
+                    read_or_not = 'read'
+                print(f'Id: { bok_id }')
+                print(f'Title: { title }')
+                print(f'Author: { author }')
+                print(f'READ? { read_or_not }')
+                print('--------------------------')
+        else:            
+            print('No books by the author was founded in your library')
+
+
+    conn.commit()
+    cur.close()
+    conn.close()
 
 # inicilizando banco de dados e o aplicativo cli.
 if __name__ == "__main__":
+
     initialize_database()
     app()
